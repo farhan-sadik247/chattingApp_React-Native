@@ -1,29 +1,66 @@
 {
   "expo": {
-    "name": "ChatApp",
-    "slug": "ChatApp",
+    "name": "iTalk",
+    "slug": "italk",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "statusBarStyle": "dark",
+    "statusBarBackgroundColor": "#FFFFFF",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.italk.mobile",
+      "icon": "./assets/logo.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "icon": "./assets/logo.png",
+      "edgeToEdgeEnabled": false,
+      "statusBarStyle": "dark",
+      "statusBarBackgroundColor": "#FFFFFF",
+      "statusBarTranslucent": false,
+      "package": "com.italk.mobile",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/logo.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them in chat.",
+          "cameraPermission": "The app accesses your camera to let you take photos for chat."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow iTalk to access your photo library to share images.",
+          "savePhotosPermission": "Allow iTalk to save photos to your photo library."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ce140cbe-451e-436a-a8b0-1182b839ed85"
+      }
+    },
+    "owner": "farhansadik2319"
   }
 }
