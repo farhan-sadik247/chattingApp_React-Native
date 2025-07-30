@@ -2,6 +2,7 @@ import { databases } from '../config/appwrite';
 import { APPWRITE_CONFIG } from '../config/appwrite';
 import { User, Friendship, ChatRoom, Message } from '../types';
 import { Query, ID } from 'appwrite';
+import { generateChatRoomKey } from '../utils/encryption';
 
 export class DatabaseService {
   // User operations
@@ -214,12 +215,16 @@ export class DatabaseService {
   // Chat room operations
   async createChatRoom(participants: string[]): Promise<ChatRoom> {
     try {
+      // Generate encryption key for the chat room
+      const encryptionKey = await generateChatRoomKey(participants[0], participants[1]);
+
       const chatRoomDoc = await databases.createDocument(
         APPWRITE_CONFIG.databaseId,
         APPWRITE_CONFIG.chatRoomsCollectionId,
         ID.unique(),
         {
           participants,
+          encryptionKey,
           lastMessageTime: new Date().toISOString(),
         }
       );
