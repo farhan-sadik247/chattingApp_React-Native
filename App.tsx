@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import { AppwriteConnectionTest } from './src/components/AppwriteConnectionTest';
 
 // Import components with error handling
 let AuthProvider: any, FriendProvider: any, ChatProvider: any, AppNavigator: any;
@@ -24,7 +25,9 @@ try {
 }
 
 export default function App() {
-  // If modules failed to load, show basic UI
+  const [showConnectionTest, setShowConnectionTest] = useState(false);
+
+  // If modules failed to load, show basic UI with connection test
   if (!AuthProvider || !FriendProvider || !ChatProvider || !AppNavigator) {
     return (
       <View style={styles.container}>
@@ -33,6 +36,20 @@ export default function App() {
         <Text style={styles.error}>
           Please check your Appwrite configuration in src/config/appwrite.ts
         </Text>
+
+        <TouchableOpacity
+          style={styles.testButton}
+          onPress={() => setShowConnectionTest(!showConnectionTest)}
+        >
+          <Text style={styles.testButtonText}>
+            {showConnectionTest ? 'Hide' : 'Test'} Appwrite Connection
+          </Text>
+        </TouchableOpacity>
+
+        {showConnectionTest && (
+          <AppwriteConnectionTest onClose={() => setShowConnectionTest(false)} />
+        )}
+
         <StatusBar style="auto" />
       </View>
     );
@@ -81,5 +98,18 @@ const styles = StyleSheet.create({
     color: '#ff6b6b',
     textAlign: 'center',
     marginTop: 16,
+  },
+  testButton: {
+    backgroundColor: '#007AFF',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  testButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });

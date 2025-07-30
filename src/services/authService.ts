@@ -1,8 +1,8 @@
 import { account, databases } from '../config/appwrite';
 import { APPWRITE_CONFIG } from '../config/appwrite';
 import { User } from '../types';
-import { generateKeyPair } from '../utils/encryption';
 import { ID } from 'appwrite';
+import { generateKeyPair } from '../utils/encryption';
 
 export class AuthService {
   // Register a new user
@@ -16,9 +16,9 @@ export class AuthService {
       await account.createEmailPasswordSession(email, password);
       console.log('Session created');
 
-      // Generate encryption keys
-      const { publicKey } = await generateKeyPair();
-      console.log('Keys generated');
+      // Generate encryption keys for the user
+      const keyPair = await generateKeyPair();
+      console.log('Encryption keys generated');
 
       // Create user document in database with the same ID as the auth user
       const userDoc = await databases.createDocument(
@@ -29,7 +29,7 @@ export class AuthService {
           email,
           username,
           displayName,
-          publicKey,
+          publicKey: keyPair.publicKey,
           isOnline: true,
           lastSeen: new Date().toISOString(),
         }
@@ -111,7 +111,9 @@ export class AuthService {
         console.error('User document not found, creating one...');
 
         // If user document doesn't exist, create it
-        const { publicKey } = await generateKeyPair();
+        // Generate encryption keys for the user
+        const keyPair = await generateKeyPair();
+
         const userDoc = await databases.createDocument(
           APPWRITE_CONFIG.databaseId,
           APPWRITE_CONFIG.usersCollectionId,
@@ -120,7 +122,7 @@ export class AuthService {
             email: accountData.email,
             username: accountData.email.split('@')[0], // Use email prefix as username
             displayName: accountData.name || accountData.email.split('@')[0],
-            publicKey,
+            publicKey: keyPair.publicKey,
             isOnline: true,
             lastSeen: new Date().toISOString(),
           }

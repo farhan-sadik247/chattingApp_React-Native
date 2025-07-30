@@ -90,7 +90,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       {!isOwnMessage && senderUser && (
         <View style={styles.senderAvatar}>
           {senderUser.avatar ? (
-            <Image source={{ uri: senderUser.avatar }} style={styles.senderAvatarImage} />
+            <Image
+              source={{ uri: senderUser.avatar }}
+              style={styles.senderAvatarImage}
+            />
           ) : (
             <Ionicons name="person" size={16} color="#666" />
           )}

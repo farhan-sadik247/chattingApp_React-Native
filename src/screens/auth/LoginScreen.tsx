@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ActivityIndicator,
+  Image,
+  Dimensions,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';
@@ -24,6 +28,64 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
+
+  // Animation values
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const floatAnim = useRef(new Animated.Value(0)).current;
+
+  // Start animations when component mounts
+  useEffect(() => {
+    // Initial scale-in animation
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      tension: 50,
+      friction: 7,
+      useNativeDriver: true,
+    }).start();
+
+    // Continuous rotation animation
+    Animated.loop(
+      Animated.timing(rotateAnim, {
+        toValue: 1,
+        duration: 20000, // 20 seconds for full rotation
+        useNativeDriver: true,
+      })
+    ).start();
+
+    // Continuous pulse animation
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.05,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    // Continuous floating animation
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(floatAnim, {
+          toValue: 1,
+          duration: 3000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(floatAnim, {
+          toValue: 0,
+          duration: 3000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -49,8 +111,69 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>Sign in to continue chatting</Text>
+          <View style={styles.imageContainer}>
+            <Animated.View
+              style={[
+                styles.imageOuterRing,
+                {
+                  transform: [
+                    { scale: scaleAnim },
+                    {
+                      rotate: rotateAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ['0deg', '360deg'],
+                      })
+                    },
+                    {
+                      translateY: floatAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, -10],
+                      })
+                    }
+                  ]
+                }
+              ]}
+            >
+              <Animated.View
+                style={[
+                  styles.imageMiddleRing,
+                  {
+                    transform: [
+                      { scale: pulseAnim },
+                      {
+                        rotate: rotateAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: ['0deg', '-180deg'], // Counter rotation
+                        })
+                      }
+                    ]
+                  }
+                ]}
+              >
+                <Animated.View
+                  style={[
+                    styles.imageWrapper,
+                    {
+                      transform: [
+                        {
+                          rotate: rotateAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ['0deg', '180deg'], // Counter the net rotation (360° - 180° = 180°)
+                          })
+                        }
+                      ]
+                    }
+                  ]}
+                >
+                  <Image
+                    source={require('../../../assets/signin.png')}
+                    style={styles.signinImage}
+                    resizeMode="contain"
+                  />
+                </Animated.View>
+              </Animated.View>
+            </Animated.View>
+          </View>
         </View>
 
         <View style={styles.form}>
@@ -59,6 +182,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             <TextInput
               style={styles.input}
               placeholder="Email"
+              placeholderTextColor="#999"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -72,6 +196,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             <TextInput
               style={styles.input}
               placeholder="Password"
+              placeholderTextColor="#999"
               value={password}
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
@@ -94,9 +219,18 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             onPress={handleLogin}
             disabled={isLoading}
           >
-            <Text style={styles.loginButtonText}>
-              {isLoading ? 'Signing In...' : 'Sign In'}
-            </Text>
+            {isLoading ? (
+              <View style={styles.buttonLoadingContainer}>
+                <ActivityIndicator size="small" color="#fff" />
+                <Text style={[styles.loginButtonText, { marginLeft: 8 }]}>
+                  Signing In...
+                </Text>
+              </View>
+            ) : (
+              <Text style={styles.loginButtonText}>
+                Sign In
+              </Text>
+            )}
           </TouchableOpacity>
 
           <View style={styles.footer}>
@@ -124,17 +258,63 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 50,
+    paddingTop: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+  imageContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
+  imageOuterRing: {
+    width: Dimensions.get('window').width * 0.75,
+    height: Dimensions.get('window').width * 0.75,
+    maxWidth: 280,
+    maxHeight: 280,
+    borderRadius: 140,
+    backgroundColor: 'rgba(0, 122, 255, 0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#007AFF',
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 12,
+  },
+  imageMiddleRing: {
+    width: '85%',
+    height: '85%',
+    borderRadius: 120,
+    backgroundColor: 'rgba(0, 122, 255, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(0, 122, 255, 0.2)',
+  },
+  imageWrapper: {
+    width: '80%',
+    height: '80%',
+    borderRadius: 100,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: '#007AFF',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  signinImage: {
+    width: '70%',
+    height: '70%',
+    borderRadius: 80,
   },
   form: {
     width: '100%',
@@ -147,7 +327,15 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 16,
     paddingHorizontal: 16,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   inputIcon: {
     marginRight: 12,
@@ -157,6 +345,7 @@ const styles = StyleSheet.create({
     height: 50,
     fontSize: 16,
     color: '#333',
+    backgroundColor: 'transparent',
   },
   eyeIcon: {
     padding: 4,
@@ -190,5 +379,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#007AFF',
     fontWeight: '600',
+  },
+  buttonLoadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

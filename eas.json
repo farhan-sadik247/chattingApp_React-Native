@@ -9,10 +9,30 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_APPWRITE_ENDPOINT": "https://fra.cloud.appwrite.io/v1",
+        "EXPO_PUBLIC_APPWRITE_PROJECT_ID": "6888ef1900086dece436",
+        "EXPO_PUBLIC_APPWRITE_DATABASE_ID": "chatapp-db",
+        "EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID": "users",
+        "EXPO_PUBLIC_APPWRITE_FRIENDSHIPS_COLLECTION_ID": "friendships",
+        "EXPO_PUBLIC_APPWRITE_CHATROOMS_COLLECTION_ID": "chatRooms",
+        "EXPO_PUBLIC_APPWRITE_MESSAGES_COLLECTION_ID": "messages",
+        "EXPO_PUBLIC_APPWRITE_STORAGE_ID": "chat-media"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_APPWRITE_ENDPOINT": "https://fra.cloud.appwrite.io/v1",
+        "EXPO_PUBLIC_APPWRITE_PROJECT_ID": "6888ef1900086dece436",
+        "EXPO_PUBLIC_APPWRITE_DATABASE_ID": "chatapp-db",
+        "EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID": "users",
+        "EXPO_PUBLIC_APPWRITE_FRIENDSHIPS_COLLECTION_ID": "friendships",
+        "EXPO_PUBLIC_APPWRITE_CHATROOMS_COLLECTION_ID": "chatRooms",
+        "EXPO_PUBLIC_APPWRITE_MESSAGES_COLLECTION_ID": "messages",
+        "EXPO_PUBLIC_APPWRITE_STORAGE_ID": "chat-media"
+      }
     }
   },
   "submit": {

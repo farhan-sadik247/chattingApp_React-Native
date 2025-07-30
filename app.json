@@ -34,8 +34,12 @@
         "android.permission.CAMERA",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.RECORD_AUDIO"
-      ]
+        "android.permission.RECORD_AUDIO",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE"
+      ],
+      "usesCleartextTraffic": true,
+      "networkSecurityConfig": "./network_security_config.xml"
     },
     "web": {
       "favicon": "./assets/logo.png"
@@ -59,6 +63,10 @@
     "extra": {
       "eas": {
         "projectId": "ce140cbe-451e-436a-a8b0-1182b839ed85"
+      },
+      "appwrite": {
+        "endpoint": "https://fra.cloud.appwrite.io/v1",
+        "projectId": "6888ef1900086dece436"
       }
     },
     "owner": "farhansadik2319"

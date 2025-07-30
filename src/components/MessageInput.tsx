@@ -128,7 +128,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   };
 
   return (
-    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 8) }]}>
+    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 16) }]}>
       <View style={styles.inputContainer}>
         <TouchableOpacity
           style={[styles.attachButton, (disabled || isLoading) && styles.disabledButton]}
@@ -185,6 +185,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
     paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
   },
   inputContainer: {
     flexDirection: 'row',

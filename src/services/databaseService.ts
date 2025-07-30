@@ -212,7 +212,7 @@ export class DatabaseService {
   }
 
   // Chat room operations
-  async createChatRoom(participants: string[], encryptionKey: string): Promise<ChatRoom> {
+  async createChatRoom(participants: string[]): Promise<ChatRoom> {
     try {
       const chatRoomDoc = await databases.createDocument(
         APPWRITE_CONFIG.databaseId,
@@ -220,7 +220,6 @@ export class DatabaseService {
         ID.unique(),
         {
           participants,
-          encryptionKey,
           lastMessageTime: new Date().toISOString(),
         }
       );

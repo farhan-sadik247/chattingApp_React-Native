@@ -1,4 +1,5 @@
 import React from 'react';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -85,8 +86,13 @@ export const AppNavigator: React.FC = () => {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    // You can add a loading screen here
-    return null;
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingTitle}>iTalk</Text>
+        <ActivityIndicator size="large" color="#007AFF" style={styles.loadingSpinner} />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
   }
 
   return (
@@ -95,3 +101,25 @@ export const AppNavigator: React.FC = () => {
     </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  loadingTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#007AFF',
+    marginBottom: 30,
+  },
+  loadingSpinner: {
+    marginBottom: 20,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
+  },
+});

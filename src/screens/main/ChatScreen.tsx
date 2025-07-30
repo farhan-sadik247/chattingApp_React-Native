@@ -11,6 +11,7 @@ import {
   Animated,
   Modal,
   Image,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -346,7 +347,12 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ navigation, route }) => 
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.chatContainer}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 80}
+      >
+        <View style={styles.chatContainer}>
         <FlatList
           ref={flatListRef}
           data={chatMessages}
@@ -356,7 +362,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ navigation, route }) => 
           contentContainerStyle={[
             styles.messagesContainer,
             {
-              paddingBottom: keyboardHeight > 0 ? 20 : 140,
+              paddingBottom: 20,
               flexGrow: 1
             }
           ]}
@@ -370,21 +376,13 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ navigation, route }) => 
           ListEmptyComponent={!isLoading ? renderEmptyState : null}
         />
 
-        <Animated.View
-          style={[
-            styles.inputContainer,
-            {
-              bottom: keyboardHeightAnim
-            }
-          ]}
-        >
           <MessageInput
             onSendText={handleSendText}
             onSendImage={handleSendImage}
             disabled={isLoading}
           />
-        </Animated.View>
-      </View>
+        </View>
+      </KeyboardAvoidingView>
 
       {/* Image Viewer Modal */}
       <Modal
@@ -442,15 +440,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     flexGrow: 1,
   },
-  inputContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-  },
+
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',

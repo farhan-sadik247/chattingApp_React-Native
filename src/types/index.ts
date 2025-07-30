@@ -7,7 +7,8 @@ export interface User {
   username: string;
   displayName: string;
   avatar?: string;
-  publicKey: string; // For E2E encryption
+  publicKey?: string;
+
   isOnline: boolean;
   lastSeen: string;
 }
@@ -36,7 +37,7 @@ export interface ChatRoom {
   participants: string[];
   lastMessage?: Message;
   lastMessageTime: string;
-  encryptionKey: string; // Encrypted room key
+
 }
 
 // Message types
@@ -46,7 +47,7 @@ export interface Message {
   $updatedAt: string;
   chatRoomId: string;
   senderId: string;
-  content: string; // Encrypted content
+  content: string; // Plain text content
   messageType: 'text' | 'image' | 'file';
   mediaUrl?: string;
   isDelivered: boolean;

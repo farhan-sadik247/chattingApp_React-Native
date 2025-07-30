@@ -1,5 +1,4 @@
 import { DatabaseService } from './databaseService';
-import { EncryptionService } from './encryptionService';
 import { storage } from '../config/appwrite';
 import { APPWRITE_CONFIG } from '../config/appwrite';
 import { ChatRoom, Message, User } from '../types';
@@ -7,11 +6,9 @@ import { ID } from 'appwrite';
 
 export class ChatService {
   private databaseService: DatabaseService;
-  private encryptionService: EncryptionService;
 
   constructor() {
     this.databaseService = new DatabaseService();
-    this.encryptionService = new EncryptionService();
   }
 
   // Create or get existing chat room between two users
@@ -29,12 +26,8 @@ export class ChatService {
 
       // Create new chat room
       const participants = [currentUserId, otherUserId];
-      const encryptionKey = await this.encryptionService.generateNewChatRoomKey(participants);
-      
-      const chatRoom = await this.databaseService.createChatRoom(participants, encryptionKey);
-      
-      // Initialize encryption key for this chat room
-      await this.encryptionService.initializeChatRoomKey(chatRoom.$id, participants);
+
+      const chatRoom = await this.databaseService.createChatRoom(participants);
 
       return chatRoom.$id;
     } catch (error) {
@@ -46,17 +39,11 @@ export class ChatService {
   // Send a text message
   async sendTextMessage(chatRoomId: string, senderId: string, content: string): Promise<Message> {
     try {
-      // Encrypt the message
-      const { encryptedContent, hash } = await this.encryptionService.encryptMessageForSending(
-        content,
-        chatRoomId
-      );
-
-      // Create message in database
+      // Create message in database (no encryption)
       const message = await this.databaseService.createMessage({
         chatRoomId,
         senderId,
-        content: encryptedContent,
+        content: content, // Store as plain text
         messageType: 'text',
         isDelivered: false,
         isRead: false,
@@ -85,21 +72,11 @@ export class ChatService {
       // Upload image to storage
       const imageUrl = await this.uploadImage(imageUri);
 
-      // Encrypt caption if provided
-      let encryptedContent = '';
-      if (caption) {
-        const { encryptedContent: encrypted } = await this.encryptionService.encryptMessageForSending(
-          caption,
-          chatRoomId
-        );
-        encryptedContent = encrypted;
-      }
-
-      // Create message in database
+      // Create message in database (no encryption for caption)
       const message = await this.databaseService.createMessage({
         chatRoomId,
         senderId,
-        content: encryptedContent,
+        content: caption || '', // Store caption as plain text
         messageType: 'image',
         mediaUrl: imageUrl,
         isDelivered: false,
@@ -159,44 +136,11 @@ export class ChatService {
   // Get messages for a chat room
   async getMessages(chatRoomId: string, limit: number = 50, offset: number = 0): Promise<Message[]> {
     try {
-      const encryptedMessages = await this.databaseService.getMessages(chatRoomId, limit, offset);
-      
-      // Decrypt messages
-      const decryptedMessages = await Promise.all(
-        encryptedMessages.map(async (message) => {
-          try {
-            let decryptedContent = message.content;
-            
-            // Only decrypt if there's content and it's a text message
-            if (message.content && message.messageType === 'text') {
-              decryptedContent = await this.encryptionService.decryptReceivedMessage(
-                message.content,
-                chatRoomId
-              );
-            } else if (message.content && message.messageType === 'image') {
-              // Decrypt caption for image messages
-              decryptedContent = await this.encryptionService.decryptReceivedMessage(
-                message.content,
-                chatRoomId
-              );
-            }
+      // Get messages directly without decryption
+      const messages = await this.databaseService.getMessages(chatRoomId, limit, offset);
 
-            return {
-              ...message,
-              content: decryptedContent,
-            };
-          } catch (decryptError) {
-            console.error('Message decryption error:', decryptError);
-            // Return message with placeholder content if decryption fails
-            return {
-              ...message,
-              content: '[Message could not be decrypted]',
-            };
-          }
-        })
-      );
-
-      return decryptedMessages;
+      // Return messages as-is (they're already plain text)
+      return messages;
     } catch (error) {
       console.error('Get messages error:', error);
       throw error;

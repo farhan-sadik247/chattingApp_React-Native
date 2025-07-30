@@ -53,11 +53,10 @@ iTalk is a feature-rich messaging app that prioritizes security, user experience
 - **Appwrite Storage** - File and media storage
 - **Appwrite Realtime** - WebSocket-based real-time updates
 
-### Security & Encryption
-- **AES Encryption** - Message encryption with crypto-js
-- **AsyncStorage** - Secure local key storage
-- **Hash Verification** - Message integrity checking
-- **Deterministic Key Generation** - Backward-compatible key recovery
+### Security & Storage
+- **AsyncStorage** - Local data storage
+- **Appwrite Authentication** - Secure user authentication
+- **Real-time Updates** - Live message synchronization
 
 ### UI & Media
 - **Expo Vector Icons** - Icon library (Ionicons)

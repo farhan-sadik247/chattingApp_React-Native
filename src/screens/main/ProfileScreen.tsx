@@ -167,7 +167,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
           onPress: async () => {
             try {
               setIsUploadingAvatar(true);
-              await updateUser({ avatar: undefined });
+              await updateUser({ avatar: '' });
               Alert.alert('Success', 'Profile picture removed successfully!');
             } catch (error) {
               console.error('Remove photo error:', error);
